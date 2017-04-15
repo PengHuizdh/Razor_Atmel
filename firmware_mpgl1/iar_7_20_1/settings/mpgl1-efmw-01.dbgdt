@@ -116,7 +116,7 @@
       <WATCH_3>
         <expressions>
           
-        <item>sTest1.u8Count</item><item>sTest1.pNextTestStructType</item><item>sTest2.u8Count</item><item>sTest2.pNextTestStructType</item><item></item></expressions>
+        <item>sTest1.u8Count</item><item>sTest1.pNextTestStructType</item><item>sTest2.u8Count</item><item>sTest2.pNextTestStructType</item><item/></expressions>
         <col-names>
           
           
@@ -133,7 +133,7 @@
       <WATCH_4>
         <expressions>
           
-        <item></item></expressions>
+        <item/></expressions>
         <col-names>
           
           
