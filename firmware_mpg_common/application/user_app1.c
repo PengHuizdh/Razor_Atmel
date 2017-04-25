@@ -160,7 +160,7 @@ static void UserApp1SM_Idle(void)
      {
         u8i = 0;
      }
-      if(u32Counter1 == 10)
+      if(u32Counter1 == 1)
         {
           u8Stop = 1;
           u32Counter2++;
