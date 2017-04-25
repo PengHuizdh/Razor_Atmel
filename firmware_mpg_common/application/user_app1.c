@@ -141,7 +141,7 @@ static void UserApp1SM_Idle(void)
      static u32 u32Counter = 0;
      static u32 u32Counter1 = 0;
      static u32 u32Counter2 = 0;
-     u32 au32Light[11] = {0,1,2,3,4,5,6,7,8,9,10};
+     u32 au32Light[21] = {0,1,2,3,4,5,6,7,8,9,10,9,8,7,6,5,4,3,2,1,0};
      
      u32Counter++;
      u32Counter1++; 
@@ -156,7 +156,7 @@ static void UserApp1SM_Idle(void)
         u8i++;
         u32Counter = 0;
      }
-     if(u8i == 11)
+     if(u8i == 21)
      {
         u8i = 0;
      }
