@@ -136,46 +136,39 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-     static u8 u8Stop = 0;
-     static u8 u8i = 0;
-     static u32 u32Counter = 0;
-     static u32 u32Counter1 = 0;
-     static u32 u32Counter2 = 0;
+     static u8 u8Counter_Array = 0;
+     static u32 u32Counter_100ms = 0;
+     static u32 u32Counter_BrightTime = 0;
      u32 au32Light[21] = {0,1,2,3,4,5,6,7,8,9,10,9,8,7,6,5,4,3,2,1,0};
      
-     u32Counter++;
-     u32Counter1++; 
-     if(u32Counter2 > au32Light[u8i] + 1)
+     u32Counter_100ms++;
+
+     if(u32Counter_BrightTime > au32Light[u8Counter_Array] + 1)
      {
        HEARTBEAT_OFF();
-       u32Counter2 = 0;
-       
+       u32Counter_BrightTime = 0;   
      } 
-     if(u32Counter == 100)
-     {
-        u8i++;
-        u32Counter = 0;
-     }
-     if(u8i == 21)
-     {
-        u8i = 0;
-     }
-      if(u32Counter1 == 1)
-        {
-          u8Stop = 1;
-          u32Counter2++;
-        }
      
-       while(u8Stop)
-       {
-          if(u32Counter2 == au32Light[u8i] + 1)
-          {
-             HEARTBEAT_ON();
-          }
+     if(u32Counter_100ms == 100)
+     {
+        u8Counter_Array++;
+        u32Counter_100ms = 0;
+     }
+     
+     if(u8Counter_Array == 21)
+     {
+        u8Counter_Array = 0;
+     }
+      
+     u32Counter_BrightTime++;
+     
+     if(u32Counter_BrightTime == au32Light[u8Counter_Array] + 1)
+     {
+        HEARTBEAT_ON();
+     }
 
-          u32Counter1 = 0;
-          u8Stop = 0;
-       }
+      
+      
      
     
   

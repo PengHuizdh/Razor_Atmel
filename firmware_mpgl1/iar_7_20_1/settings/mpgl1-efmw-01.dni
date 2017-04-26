@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1993140792
+Checksum=-1360417352
 [JLinkDriver]
 CStepIntDis=_ 0
 WatchCond=_ 0
@@ -46,7 +46,8 @@ Enabled=_ 0
 [watch_formats]
 Fmt0={W}3:* pau8string	3	0
 Fmt1={W}3:UserApp_u8AdcResultCount	3	0
-Fmt2={W}3:u8conter2	3	0
+Fmt2={W}3:u8Counter_Array	3	0
+Fmt3={W}3:u8conter2	3	0
 [Trace1]
 Enabled=0
 ShowSource=1
@@ -60,6 +61,9 @@ Count=2
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Aliases]
 Count=0
 SuppressDialog=0
@@ -71,6 +75,3 @@ Mode=1
 Graph=0
 Symbiont=0
 Exclusions=
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
