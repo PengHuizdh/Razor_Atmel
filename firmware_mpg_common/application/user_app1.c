@@ -142,31 +142,33 @@ static void UserApp1SM_Idle(void)
      u32 au32Light[21] = {0,1,2,3,4,5,6,7,8,9,10,9,8,7,6,5,4,3,2,1,0};
      
      u32Counter_100ms++;
-
-     if(u32Counter_BrightTime > au32Light[u8Counter_Array] + 1)
+     
+     if(u32Counter_BrightTime >= au32Light[u8Counter_Array])
      {
-       HEARTBEAT_OFF();
-       u32Counter_BrightTime = 0;   
-     } 
+       HEARTBEAT_OFF();       
+     }
+     else
+     {
+       HEARTBEAT_ON();
+     }
      
      if(u32Counter_100ms == 100)
      {
         u8Counter_Array++;
-        u32Counter_100ms = 0;
+        u32Counter_100ms = 0;   
      }
      
      if(u8Counter_Array == 21)
      {
         u8Counter_Array = 0;
      }
-      
-     u32Counter_BrightTime++;
      
-     if(u32Counter_BrightTime == au32Light[u8Counter_Array] + 1)
+      u32Counter_BrightTime++;
+     
+     if(u32Counter_BrightTime == 11)
      {
-        HEARTBEAT_ON();
+       u32Counter_BrightTime = 0;
      }
-
       
       
      
