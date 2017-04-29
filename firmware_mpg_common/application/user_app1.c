@@ -137,29 +137,29 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
     static u8 u8ButtonScanf(void)
       {  
-            static u8 u8ButtonValue = 0;
+            u8 u8ButtonValue = 9;
               
              if(WasButtonPressed(BUTTON0))
              {
-               ButtonAcknowledge(BUTTON0);
+                ButtonAcknowledge(BUTTON0);
                 u8ButtonValue = 1;
              }
              
              if(WasButtonPressed(BUTTON1))
              {
-               ButtonAcknowledge(BUTTON1);
+              ButtonAcknowledge(BUTTON1);
               u8ButtonValue = 2;
              }
              
              if(WasButtonPressed(BUTTON2))
              {
-               ButtonAcknowledge(BUTTON2);
+              ButtonAcknowledge(BUTTON2);
               u8ButtonValue = 3;
              }
              
              if(WasButtonPressed(BUTTON3))
              {
-               ButtonAcknowledge(BUTTON3);
+              ButtonAcknowledge(BUTTON3);
               u8ButtonValue = 4;
              }
              
@@ -174,35 +174,66 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-   static u8 i = 0;
-   static u8 j = 0;
+   static u8 u8Count_Detection = 0;
+   static u8 u8Count_Enter = 0;
    static u8 u8Password[6] = {2,2,3,3,4,4};
-   static u8 u8Password_enter[6] = {9,9,9,9,9,9};
-   static u8 u8ButtonValue  = 0;
+   static u8 u8Password_enter[6] = 0;
+   static u8 u8ButtonValue = 0;
+   static u32 u32Count_RED_Bright = 0;
+   static u32 u32Count_End_Bright = 0;
+   static bool bCount_End = 0;
+   u8 u8Count_Right = 0;
    
    u8ButtonValue = u8ButtonScanf();
-   
-   if(u8ButtonValue)
-   {  
-      LedOn(RED);
-                
-      u8Password_enter[j] = u8ButtonValue;
-       j++;
-                      
-      u8ButtonValue = 0;
-   }   
-  
-   if(j == 6)
+   u32Count_RED_Bright++;
+   if(bCount_End)
    {
-       if(u8Password_enter[6] == u8Password[6])
-       {
-          LedOn(GREEN);
-       }
-       else
+     u32Count_End_Bright++;
+   }
+   if(u32Count_End_Bright == 1000)
+   {
+      LedOff(PURPLE);
+      LedOff(GREEN);
+      u32Count_End_Bright = 0;
+      bCount_End = 0;
+   }
+   if(u8ButtonValue != 9)
+   {  
+      LedOff(PURPLE);
+      LedOff(GREEN);
+      LedOn(RED);         
+      u8Password_enter[u8Count_Enter] = u8ButtonValue;
+       u8Count_Enter++;                 
+   } 
+    
+      if(u32Count_RED_Bright > 300)
+      {
+        LedOff(RED);
+        u32Count_RED_Bright = 0;
+      }
+  
+   
+  
+   if(u8Count_Enter == 6)
+   {
+     for( ;u8Count_Detection < 6; u8Count_Detection++)
+     {  
+       u8Count_Right++;
+       if(u8Password_enter[u8Count_Detection] != u8Password[u8Count_Detection])
        {
          u8Password_enter[6] = 0;
-       }
-       j = 0;
+         LedOn(PURPLE);
+         bCount_End = 1;
+         break;
+       }  
+     }
+     if(u8Count_Right == 6)
+     {
+        LedOn(GREEN);
+        bCount_End = 1;
+     }
+       u8Count_Enter = 0;
+       u8Count_Detection = 0;
    }
 /* switch(u8ButtonValue)
  {

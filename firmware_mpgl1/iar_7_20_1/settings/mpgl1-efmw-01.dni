@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1232689134
+Checksum=645920193
 [JLinkDriver]
 CStepIntDis=_ 0
 WatchCond=_ 0
@@ -48,8 +48,9 @@ Fmt0={W}3:* pau8string	3	0
 Fmt1={W}3:UserApp_u8AdcResultCount	3	0
 Fmt2={W}3:i	3	0
 Fmt3={W}3:j	3	0
-Fmt4={W}3:u8ButtonValue	3	0
-Fmt5={W}3:u8conter2	3	0
+Fmt4={W}3:k	3	0
+Fmt5={W}3:u8ButtonValue	3	0
+Fmt6={W}3:u8conter2	3	0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
