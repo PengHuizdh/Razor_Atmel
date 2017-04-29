@@ -87,6 +87,15 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+ 
  
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -126,7 +135,36 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions                                                                                                  */
 /*--------------------------------------------------------------------------------------------------------------------*/
-
+    static u8 u8ButtonScanf(void)
+      {  
+            static u8 u8ButtonValue = 0;
+              
+             if(WasButtonPressed(BUTTON0))
+             {
+               ButtonAcknowledge(BUTTON0);
+                u8ButtonValue = 1;
+             }
+             
+             if(WasButtonPressed(BUTTON1))
+             {
+               ButtonAcknowledge(BUTTON1);
+              u8ButtonValue = 2;
+             }
+             
+             if(WasButtonPressed(BUTTON2))
+             {
+               ButtonAcknowledge(BUTTON2);
+              u8ButtonValue = 3;
+             }
+             
+             if(WasButtonPressed(BUTTON3))
+             {
+               ButtonAcknowledge(BUTTON3);
+              u8ButtonValue = 4;
+             }
+             
+             return u8ButtonValue;
+      }
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -136,6 +174,59 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
+   static u8 i = 0;
+   static u8 j = 0;
+   static u8 u8Password[6] = {2,2,3,3,4,4};
+   static u8 u8Password_enter[6] = {9,9,9,9,9,9};
+   static u8 u8ButtonValue  = 0;
+   
+   u8ButtonValue = u8ButtonScanf();
+   
+   if(u8ButtonValue)
+   {  
+      LedOn(RED);
+                
+      u8Password_enter[j] = u8ButtonValue;
+       j++;
+                      
+      u8ButtonValue = 0;
+   }   
+  
+   if(j == 6)
+   {
+       if(u8Password_enter[6] == u8Password[6])
+       {
+          LedOn(GREEN);
+       }
+       else
+       {
+         u8Password_enter[6] = 0;
+       }
+       j = 0;
+   }
+/* switch(u8ButtonValue)
+ {
+ case 1:
+   LedToggle(WHITE);
+   u8ButtonValue = 0;
+   break;
+ case 2:
+   LedToggle(PURPLE);
+   u8ButtonValue = 0;
+   break;
+ case 3:
+   LedOn(BLUE);
+   u8ButtonValue = 0;
+   break;
+ case 4:
+   LedOff(WHITE);
+   LedOff(PURPLE);
+   LedOff(BLUE);
+   u8ButtonValue = 0;
+   break;
+ default:
+   break;
+ }*/
 
 } /* end UserApp1SM_Idle() */
     
