@@ -95,8 +95,7 @@ void UserApp1Initialize(void)
   LedOff(YELLOW);
   LedOff(ORANGE);
   LedOff(RED);
- 
- 
+  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -342,7 +341,8 @@ static void UserApp1SM_Idle(void)
              u32Count_Red++;
              if(u32Count_Red >= 500)
              {
-                LedOn(RED);   
+                LedOn(RED); 
+                u8Count_Enter = 0;
              }
              else
              {
