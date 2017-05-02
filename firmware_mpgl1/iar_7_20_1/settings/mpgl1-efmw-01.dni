@@ -54,15 +54,6 @@ Fmt6={W}3:u8conter2	3	0
 Fmt7={W}4:u8Count_Enter	3	0
 Fmt8={W}4:u8Count_Green	3	0
 Fmt9={W}4:u8Password[u8Count_Enter]	3	0
-[Trace1]
-Enabled=0
-ShowSource=1
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\firmware_mpg_common\drivers\adc12.c}.317.3" 0 0 1 "" 0 "" 0
-Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\application\main.c}.84.5" 0 0 1 "" 0 "" 0
-Count=2
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -70,9 +61,6 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
-[Aliases]
-Count=0
-SuppressDialog=0
 [CallStackLog]
 Enabled=0
 [DriverProfiling]
@@ -81,3 +69,12 @@ Mode=1
 Graph=0
 Symbiont=0
 Exclusions=
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\firmware_mpg_common\drivers\adc12.c}.317.3" 0 0 1 "" 0 "" 0
+Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\application\main.c}.84.5" 0 0 1 "" 0 "" 0
+Count=2
+[Aliases]
+Count=0
+SuppressDialog=0
