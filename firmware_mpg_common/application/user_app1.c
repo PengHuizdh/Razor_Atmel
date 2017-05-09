@@ -203,7 +203,7 @@ static void UserApp1SM_Idle(void)
           {
             u32CountName++;
             PrintfName(u32CountName);
-            if(u32CountEnter == 100)
+            if(u32CountEnter > 90)
             {
               au8EnterAdd[100] = 0;
               pu8Enter = au8EnterAdd;
