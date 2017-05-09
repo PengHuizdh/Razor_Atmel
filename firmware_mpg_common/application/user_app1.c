@@ -48,7 +48,8 @@ volatile u32 G_u32UserApp1Flags;                       /* Global state flags */
 /* Existing variables (defined in other files -- should all contain the "extern" keyword) */
 extern volatile u32 G_u32SystemFlags;                  /* From main.c */
 extern volatile u32 G_u32ApplicationFlags;             /* From main.c */
-
+extern u8 G_au8DebugScanfBuffer[];                    /* From debug.c */
+extern u8 G_u8DebugScanfCharCount;
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
 
@@ -126,7 +127,40 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions                                                                                                  */
 /*--------------------------------------------------------------------------------------------------------------------*/
-
+static void PrintfName(u32 u32CountName)
+{
+  static u8 au8Printf[] = "*";
+  u32 u32Number_Of_Bit = 0;
+  if(u32CountName / 10 >= 0)
+  {
+    u32Number_Of_Bit++;
+  }
+  if(u32CountName / 10 > 0)
+  {
+    u32Number_Of_Bit++;
+  }
+  if(u32CountName / 100 > 0)
+  {
+    u32Number_Of_Bit++;
+  }
+  DebugLineFeed();
+  u32 u32CountPrintf = u32Number_Of_Bit + 2;
+  for(;u32CountPrintf > 0; u32CountPrintf--)
+  {
+    DebugPrintf(au8Printf);
+  }
+  DebugLineFeed();
+  DebugPrintf(au8Printf);
+  DebugPrintNumber(u32CountName);
+  DebugPrintf(au8Printf);
+  DebugLineFeed();
+  u32CountPrintf = u32Number_Of_Bit + 2;
+  for(;u32CountPrintf > 0; u32CountPrintf--)
+  {
+    DebugPrintf(au8Printf);
+  }
+  DebugLineFeed();
+}
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -136,36 +170,51 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-  if(IsButtonPressed(BUTTON0))
+  static u8 au8Enter[10] = 0;
+  static u8 au8EnterAdd[100] = 0;
+  static u8 *pu8Enter = au8EnterAdd;
+  static u8 au8MyName[] = {'i','u','h','g','n','e','p'};
+  static u32 u32CountEnter = 0;
+  static u32 u32CountEnterCycle = 0;
+  static u32 u32CountName = 0;
+  static u8 u8ForCycle = 0;
+  static u8 u8Count_ConfirmName = 0;
+  static u32 u32EnterButter;
+  u32EnterButter = G_au8DebugScanfBuffer[0];
+  if(DebugScanf(au8Enter) == 1)
   {
-    PWMAudioSetFrequency(BUZZER1,262);
-    PWMAudioOn(BUZZER1);
-  }
-  
-  
-  if(IsButtonPressed(BUTTON1))
-  {
-    PWMAudioSetFrequency(BUZZER1,294);
-    PWMAudioOn(BUZZER1);
-  }
- 
-
-  if(IsButtonPressed(BUTTON2))
-  {
-    PWMAudioSetFrequency(BUZZER1,330);
-    PWMAudioOn(BUZZER1);
-  }
- 
-  
-  if(IsButtonPressed(BUTTON3))
-  {
-    PWMAudioSetFrequency(BUZZER1,392);
-    PWMAudioOn(BUZZER1);
-  }
-  
-  if(!IsButtonPressed(BUTTON0)||!IsButtonPressed(BUTTON1)||!IsButtonPressed(BUTTON2)||!IsButtonPressed(BUTTON3))
-  {
-    PWMAudioOff(BUZZER1);
+    u32CountEnter++;
+    *pu8Enter = u32EnterButter;
+    pu8Enter++;
+    if(u32EnterButter == 'i')
+    {
+      u32CountEnterCycle = u32CountEnter - 1;
+      for(; u8ForCycle < 7; u8ForCycle++)
+      {
+        if(au8EnterAdd[u32CountEnterCycle] != au8MyName[u8ForCycle])
+        {
+          break;
+        }
+        else
+        {
+          u8Count_ConfirmName++;
+          u32CountEnterCycle--;
+          if(u8Count_ConfirmName == 6)
+          {
+            u32CountName++;
+            PrintfName(u32CountName);
+            if(u32CountEnter == 100)
+            {
+              au8EnterAdd[100] = 0;
+              pu8Enter = au8EnterAdd;
+            }
+          }
+        }
+      }
+      u8ForCycle = 0;
+      u8Count_ConfirmName = 0;
+      u32CountEnterCycle = 0;
+    }
   }
 } /* end UserApp1SM_Idle() */
     
@@ -174,7 +223,7 @@ static void UserApp1SM_Idle(void)
 /* Handle an error */
 static void UserApp1SM_Error(void)          
 {
-  
+ 
 } /* end UserApp1SM_Error() */
 #endif
 
