@@ -131,16 +131,10 @@ static void PrintfName(u32 u32CountName)
 {
   static u8 au8Printf[] = "*";
   u32 u32Number_Of_Bit = 0;
-  if(u32CountName / 10 >= 0)
+  u32 u32BufferCount = u32CountName;
+  while(u32BufferCount)
   {
-    u32Number_Of_Bit++;
-  }
-  if(u32CountName / 10 > 0)
-  {
-    u32Number_Of_Bit++;
-  }
-  if(u32CountName / 100 > 0)
-  {
+    u32BufferCount = u32BufferCount / 10;
     u32Number_Of_Bit++;
   }
   DebugLineFeed();
@@ -170,8 +164,8 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-  static u8 au8Enter[10] = 0;
-  static u8 au8EnterAdd[100] = 0;
+  static u8 au8Enter[10] = "0";
+  static u8 au8EnterAdd[120] = "0";
   static u8 *pu8Enter = au8EnterAdd;
   static u8 au8MyName[] = {'i','u','h','g','n','e','p'};
   static u32 u32CountEnter = 0;
@@ -179,38 +173,44 @@ static void UserApp1SM_Idle(void)
   static u32 u32CountName = 0;
   static u8 u8ForCycle = 0;
   static u8 u8Count_ConfirmName = 0;
-  static u32 u32EnterButter;
-  u32EnterButter = G_au8DebugScanfBuffer[0];
+  static u32 u32EnterBuffer;
+  
+  u32EnterBuffer = G_au8DebugScanfBuffer[0];
+  
+  /*if scanf then record and the pointer points to the next address*/
   if(DebugScanf(au8Enter) == 1)
   {
     u32CountEnter++;
-    *pu8Enter = u32EnterButter;
+    *pu8Enter = u32EnterBuffer;
     pu8Enter++;
-    if(u32EnterButter == 'i')
+    
+    /*if enter 'i' then compared */
+    if(u32EnterBuffer == 'i')
     {
       u32CountEnterCycle = u32CountEnter - 1;
+      
       for(; u8ForCycle < 7; u8ForCycle++)
       {
         if(au8EnterAdd[u32CountEnterCycle] != au8MyName[u8ForCycle])
         {
+          au8EnterAdd[100] = 0;
+          pu8Enter = au8EnterAdd;
+          u32CountEnter = 0;
           break;
         }
         else
         {
           u8Count_ConfirmName++;
           u32CountEnterCycle--;
+          /*if all right then Count++*/
           if(u8Count_ConfirmName == 6)
           {
             u32CountName++;
             PrintfName(u32CountName);
-            if(u32CountEnter > 90)
-            {
-              au8EnterAdd[100] = 0;
-              pu8Enter = au8EnterAdd;
-            }
           }
         }
       }
+      
       u8ForCycle = 0;
       u8Count_ConfirmName = 0;
       u32CountEnterCycle = 0;
