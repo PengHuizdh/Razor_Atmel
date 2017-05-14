@@ -129,30 +129,37 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 static void PrintfName(u32 u32CountName)
 {
-  static u8 au8Printf[] = "*";
+  u8 au8PrintfBuffer[] = "0";
   u32 u32Number_Of_Bit = 0;
   u32 u32BufferCount = u32CountName;
+  
   while(u32BufferCount)
   {
     u32BufferCount = u32BufferCount / 10;
     u32Number_Of_Bit++;
   }
   DebugLineFeed();
+  
   u32 u32CountPrintf = u32Number_Of_Bit + 2;
+  au8PrintfBuffer[u32CountPrintf + 1] = '\0';
   for(;u32CountPrintf > 0; u32CountPrintf--)
   {
-    DebugPrintf(au8Printf);
+    au8PrintfBuffer[(u32Number_Of_Bit + 2) - u32CountPrintf] = '*';
   }
+  DebugPrintf(au8PrintfBuffer);
+  
   DebugLineFeed();
-  DebugPrintf(au8Printf);
+  DebugPrintf("*");
   DebugPrintNumber(u32CountName);
-  DebugPrintf(au8Printf);
+  DebugPrintf("*");
   DebugLineFeed();
-  u32CountPrintf = u32Number_Of_Bit + 2;
+  
+  u32CountPrintf = u32Number_Of_Bit + 2; 
   for(;u32CountPrintf > 0; u32CountPrintf--)
   {
-    DebugPrintf(au8Printf);
+    au8PrintfBuffer[(u32Number_Of_Bit + 2) - u32CountPrintf] = '*';
   }
+  DebugPrintf(au8PrintfBuffer);
   DebugLineFeed();
 }
 
@@ -189,7 +196,7 @@ static void UserApp1SM_Idle(void)
     {
       u32CountEnterCycle = u32CountEnter - 1;
       
-      for(; u8ForCycle < 7; u8ForCycle++)
+      for(; u8ForCycle < 6; u8ForCycle++)
       {
         if(au8EnterAdd[u32CountEnterCycle] != au8MyName[u8ForCycle])
         {
@@ -207,6 +214,9 @@ static void UserApp1SM_Idle(void)
           {
             u32CountName++;
             PrintfName(u32CountName);
+            au8EnterAdd[100] = 0;
+            pu8Enter = au8EnterAdd;
+            u32CountEnter = 0;
           }
         }
       }
