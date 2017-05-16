@@ -28,8 +28,8 @@ All Global variable names shall start with "G_"
 /* New variables */
 u8 G_au8MessageOK[]   = MESSAGE_OK;            /* Common "OK" message */
 u8 G_au8MessageFAIL[] = MESSAGE_FAIL;          /* Common "FAIL" message */
-u8 G_au8MessageON[]   = MESSAGE_ON;            /* Common "ON" message */
-u8 G_au8MessageOFF[]  = MESSAGE_OFF;           /* Common "OFF" message */
+u8 G_au8UtilMessageON[]   = MESSAGE_ON;            /* Common "ON" message */
+u8 G_au8UtilMessageOFF[]  = MESSAGE_OFF;           /* Common "OFF" message */
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -251,6 +251,30 @@ u8 NumberToAscii(u32 u32Number_, u8* pu8AsciiString_)
   return(u8CharCount);
 
 } /* end NumberToAscii() */
+
+
+/*-----------------------------------------------------------------------------/
+Function: AsciiToNumber
+
+Description:
+Reads an ASCII string and coverts it to a u32
+
+Requires:
+  - pu8NumberString_ points to a NULL terminated ASCII number string
+  - The size of the number is < 2^32
+
+Promises:
+  - Returns the integer value of the ASCII number 
+Example:
+u32 u32Number;
+u32Number = AsciiToNumber(“123456”);
+// u32Number is now 123456
+
+*/
+u32 AsciiToNumber(u8* pu8NumberString_)
+{
+  return 0;
+}  /* end AsciiToNumber() */
 
 
 /*-----------------------------------------------------------------------------/
