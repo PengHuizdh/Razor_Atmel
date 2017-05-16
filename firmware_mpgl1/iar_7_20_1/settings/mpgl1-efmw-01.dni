@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1623855877
+Checksum=-1306393941
 [JLinkDriver]
 CStepIntDis=_ 0
 WatchCond=_ 0
@@ -43,10 +43,13 @@ UnspecRange=1
 ActionState=1
 [CodeCoverage]
 Enabled=_ 0
+[struct_types]
+Fmt0=LedCommandType-bOn	3	0
+Fmt1=LedCommandType-eCurrentRate	3	0
+[array_types]
+Fmt0=u8[7]	4	0
 [watch_formats]
-Fmt0={W}3:* pau8string	3	0
-Fmt1={W}3:UserApp_u8AdcResultCount	3	0
-Fmt2={W}3:u8conter2	3	0
+Fmt0={W}2:Msg_u8QueuedMessageCount	3	0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -65,9 +68,7 @@ Exclusions=
 [Disassemble mode]
 mode=0
 [Breakpoints2]
-Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\firmware_mpg_common\drivers\adc12.c}.317.3" 0 0 1 "" 0 "" 0
-Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\application\main.c}.84.5" 0 0 1 "" 0 "" 0
-Count=2
+Count=0
 [Aliases]
 Count=0
 SuppressDialog=0
