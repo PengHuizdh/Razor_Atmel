@@ -51,7 +51,7 @@ extern volatile u32 G_u32ApplicationFlags;             /* From main.c */
 
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
-
+extern u8 G_au8DebugScanfBuffer[];
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -227,8 +227,7 @@ static void PrintName(u32 u32DelayPrintName)
     LedOff(CYAN);
     LedOff(GREEN);
     LedOff(YELLOW);
-    LedOff(ORANGE);
-    u32DelayPrintName = 0; 
+    LedOff(ORANGE); 
   }
 }
 
@@ -253,9 +252,42 @@ static void CycleName(void)
   {
     u8CountCycleLine1 = LINE1_START_ADDR;
     u8CountCycleLine2 = (LINE2_START_ADDR + 20);
+  } 
+}
+
+static void Print_LCD(u8* pu8EnterBuffer)
+{
+  static u8 u8CountNumber = 0;
+  static u8 au8Buffer[255] = "0";
+  static u8* pu8Buffer = au8Buffer;
+  static u8* pu8Transfer;
+  static u8 au8PrintfLine1[20] = "0";
+  static u8 au8PrintfLine2[20] = "0";
+  
+  au8Buffer[u8CountNumber] = *pu8EnterBuffer;
+  u8CountNumber++;
+  pu8Transfer = pu8Buffer;
+  pu8Buffer++;
+  if(u8CountNumber > 20)
+  {
+      for(u8 u8i=0; u8i<20; u8i++)
+      {
+        au8PrintfLine1[u8i] = *pu8Transfer;
+        pu8Transfer--;  
+      }
   }
-  
-  
+ 
+  if(u8CountNumber > 40)
+  {
+      for(u8 u8j=0; u8j<20; u8j++)
+      {
+        au8PrintfLine2[u8j] = *pu8Transfer;
+        pu8Transfer--;  
+      }
+  }
+   LCDCommand(LCD_CLEAR_CMD);
+   LCDMessage(LINE1_START_ADDR , au8PrintfLine1);
+   LCDMessage(LINE2_START_ADDR , au8PrintfLine2);
 }
 
 /**********************************************************************************************************************
@@ -268,17 +300,25 @@ static void UserApp1SM_Idle(void)
 {
    static u32 u32DelayPrintName = 0;
    static u32 u32DelayCycleName = 0;
-   static bool bPrintName = 1;
-   static bool bCycleName = 0;
-   u32DelayPrintName++;
+   static u32 u32CountBuffer = 0;
+   static u32 u32EnterBuffer = 0;
+   static u8 au8Enter[] = "0";
+   static u8 au8EnterBuffer[255]= "0";
+   static u8* pu8EnterBuffer = au8EnterBuffer;
+   static bool bPrintName = TRUE;
+   static bool bCycleName = FALSE;
+   static bool bEnterDebug = FALSE;
+   
  
    if(bPrintName)
-   {  
+   {
+     u32DelayPrintName++;
      PrintName(u32DelayPrintName);
      if(u32DelayPrintName == 7500)
      {
-      bPrintName = 0;
-      bCycleName = 1;
+       u32DelayPrintName = 0;
+       bPrintName = FALSE;
+       bCycleName = TRUE;
      }
    }
    
@@ -290,12 +330,26 @@ static void UserApp1SM_Idle(void)
        CycleName();
        u32DelayCycleName = 0;
      }
-     
-     if(WasButtonPressed(BUTTON0))
+   }
+   
+   if(WasButtonPressed(BUTTON3))
      {
-      ButtonAcknowledge(BUTTON0);
-      bCycleName != bCycleName;
+       ButtonAcknowledge(BUTTON3);
+       LCDCommand(LCD_CLEAR_CMD);
+       bCycleName = FALSE;
+       bEnterDebug = TRUE;
      }
+   
+   if(bEnterDebug)
+   {
+     u32EnterBuffer = G_au8DebugScanfBuffer[0];  
+      if(DebugScanf(au8Enter) == 1)
+      { 
+        *pu8EnterBuffer = u32EnterBuffer;
+        Print_LCD(pu8EnterBuffer);
+        u32CountBuffer++;
+        pu8EnterBuffer++;
+      } 
    }
    
 } /* end UserApp1SM_Idle() */
