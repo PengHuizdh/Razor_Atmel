@@ -87,7 +87,13 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
- 
+ LedOff(WHITE);
+ LedOff(PURPLE);
+ LedOff(BLUE);
+ LedOff(CYAN);
+ LedOff(GREEN);
+ LedOff(YELLOW);
+ LedOff(ORANGE);
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -126,7 +132,131 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions                                                                                                  */
 /*--------------------------------------------------------------------------------------------------------------------*/
+static void PrintName(u32 u32DelayPrintName)
+{
+  if(u32DelayPrintName == 1)
+  {
+    LCDCommand(LCD_CLEAR_CMD);
+  }
+ 
+  if(u32DelayPrintName == 500)
+  {
+    PWMAudioOn(BUZZER1) ;
+    PWMAudioSetFrequency(BUZZER1, 300);
+    LCDMessage(LINE1_START_ADDR, "i");
+    LedOn(WHITE);
+  }
+  
+  if(u32DelayPrintName == 1500)
+  {
+    PWMAudioSetFrequency(BUZZER1, 350);
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE2_START_ADDR + 1, "i");
+    LCDMessage(LINE1_START_ADDR, "u");
+    LedOn(PURPLE); 
+  }
+  
+  if(u32DelayPrintName == 2500)
+  {
+    PWMAudioSetFrequency(BUZZER1, 400);
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE1_START_ADDR + 2, "i");
+    LCDMessage(LINE2_START_ADDR + 1, "u");
+    LCDMessage(LINE1_START_ADDR, "H");
+    LedOn(BLUE);
+  }
+  
+  if(u32DelayPrintName == 3500)
+  {
+    PWMAudioSetFrequency(BUZZER1, 450);
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE2_START_ADDR + 3, "i");
+    LCDMessage(LINE1_START_ADDR + 2, "u");
+    LCDMessage(LINE2_START_ADDR + 1, "H");
+    LCDMessage(LINE1_START_ADDR, "g");
+    LedOn(CYAN);
+  }
+  
+  if(u32DelayPrintName == 4500)
+  {
+    PWMAudioSetFrequency(BUZZER1, 500);
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE1_START_ADDR + 4, "i");
+    LCDMessage(LINE2_START_ADDR + 3, "u");
+    LCDMessage(LINE1_START_ADDR + 2, "H");
+    LCDMessage(LINE2_START_ADDR + 1, "g");
+    LCDMessage(LINE1_START_ADDR, "n");
+    LedOn(GREEN);
+  }
+  
+  if(u32DelayPrintName == 5500)
+  {
+    PWMAudioSetFrequency(BUZZER1, 550);
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE2_START_ADDR + 5, "i");
+    LCDMessage(LINE1_START_ADDR + 4, "u");
+    LCDMessage(LINE2_START_ADDR + 3, "H");
+    LCDMessage(LINE1_START_ADDR + 2, "g");
+    LCDMessage(LINE2_START_ADDR + 1, "n");
+    LCDMessage(LINE1_START_ADDR, "e");
+    LedOn(YELLOW);
+  }
+  
+  if(u32DelayPrintName == 6500)
+  {
+    PWMAudioSetFrequency(BUZZER1, 600);
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE1_START_ADDR + 6, "i");
+    LCDMessage(LINE2_START_ADDR + 5, "u");
+    LCDMessage(LINE1_START_ADDR + 4, "H");
+    LCDMessage(LINE2_START_ADDR + 3, "g");
+    LCDMessage(LINE1_START_ADDR + 2, "n");
+    LCDMessage(LINE2_START_ADDR + 1, "e");
+    LCDMessage(LINE1_START_ADDR, "P");
+    LedOn(ORANGE);
+  }
+  
+  if(u32DelayPrintName == 7500)
+  {
+    PWMAudioOff(BUZZER1);
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE1_START_ADDR, "PengHui");
+    LedOff(WHITE);
+    LedOff(PURPLE);
+    LedOff(BLUE);
+    LedOff(CYAN);
+    LedOff(GREEN);
+    LedOff(YELLOW);
+    LedOff(ORANGE);
+    u32DelayPrintName = 0; 
+  }
+}
 
+static void CycleName(void)
+{
+  static u8 u8CountCycleLine1 = LINE1_START_ADDR;
+  static u8 u8CountCycleLine2 = (LINE2_START_ADDR + 20);
+  
+  if(u8CountCycleLine1 <=  19)
+  {
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(u8CountCycleLine1, "PengHui");
+    u8CountCycleLine1++;
+  }
+  else if(u8CountCycleLine2 >= 64)
+  {
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(u8CountCycleLine2, "PengHui");
+    u8CountCycleLine2--;
+  }
+  else
+  {
+    u8CountCycleLine1 = LINE1_START_ADDR;
+    u8CountCycleLine2 = (LINE2_START_ADDR + 20);
+  }
+  
+  
+}
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -136,7 +266,38 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-
+   static u32 u32DelayPrintName = 0;
+   static u32 u32DelayCycleName = 0;
+   static bool bPrintName = 1;
+   static bool bCycleName = 0;
+   u32DelayPrintName++;
+ 
+   if(bPrintName)
+   {  
+     PrintName(u32DelayPrintName);
+     if(u32DelayPrintName == 7500)
+     {
+      bPrintName = 0;
+      bCycleName = 1;
+     }
+   }
+   
+   if(bCycleName)
+   {
+     u32DelayCycleName++;
+     if(u32DelayCycleName == 500)
+     {
+       CycleName();
+       u32DelayCycleName = 0;
+     }
+     
+     if(WasButtonPressed(BUTTON0))
+     {
+      ButtonAcknowledge(BUTTON0);
+      bCycleName != bCycleName;
+     }
+   }
+   
 } /* end UserApp1SM_Idle() */
     
 #if 0
