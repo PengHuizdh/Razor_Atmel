@@ -349,7 +349,12 @@ static void UserApp1SM_Idle(void)
         Print_LCD(pu8EnterBuffer);
         u32CountBuffer++;
         pu8EnterBuffer++;
-      } 
+      }
+      if(WasButtonPressed(BUTTON2))
+     {
+       ButtonAcknowledge(BUTTON2);
+       DebugPrintf(au8EnterBuffer);
+     }
    }
    
 } /* end UserApp1SM_Idle() */
