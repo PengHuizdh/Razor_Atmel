@@ -255,39 +255,129 @@ static void CycleName(void)
   } 
 }
 
-static void Print_LCD(u8* pu8EnterBuffer)
+static void Print_LCD(u8* pu8EnterBuffer, u8 u8CountPrintf)
 {
   static u8 u8CountNumber = 0;
+  static u8 u8CountPrint_40 = 0;
+  static u16 u16Delay = 0;
   static u8 au8Buffer[255] = "0";
   static u8* pu8Buffer = au8Buffer;
   static u8* pu8Transfer;
   static u8 au8PrintfLine1[20] = "0";
   static u8 au8PrintfLine2[20] = "0";
+  static bool bInitialize = TRUE;
   
-  au8Buffer[u8CountNumber] = *pu8EnterBuffer;
-  u8CountNumber++;
-  pu8Transfer = pu8Buffer;
-  pu8Buffer++;
-  if(u8CountNumber > 20)
+  if(bInitialize)
+    {
+      u8CountNumber = u8CountPrintf;
+      pu8Transfer = pu8EnterBuffer;
+      bInitialize = FALSE;
+    }
+  
+  if(u8CountPrintf < 20)
   {
-      for(u8 u8i=0; u8i<20; u8i++)
-      {
-        au8PrintfLine1[u8i] = *pu8Transfer;
-        pu8Transfer--;  
-      }
+    pu8Buffer = ((pu8EnterBuffer + 2) - u8CountPrintf);
+    
+    for(u8 u8i=0; u8i<u8CountPrintf; u8i++)
+    {
+      au8PrintfLine1[u8i] = *pu8Buffer;
+      pu8Buffer++;
+    }
+    
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE1_START_ADDR , au8PrintfLine1);
   }
- 
-  if(u8CountNumber > 40)
+  
+  else if((u8CountPrintf >=20) && (u8CountPrintf < 40))
   {
-      for(u8 u8j=0; u8j<20; u8j++)
-      {
-        au8PrintfLine2[u8j] = *pu8Transfer;
-        pu8Transfer--;  
-      }
+    pu8Buffer = ((pu8EnterBuffer + 2) - u8CountPrintf);
+    
+    for(u8 u8j=0; u8j<20; u8j++)
+    {
+      au8PrintfLine1[u8j] = *pu8Buffer;
+      pu8Buffer++;
+    }
+    
+    for(u8 u8j=0; u8j<(u8CountPrintf-20); u8j++)
+    {
+      au8PrintfLine2[u8j] = *pu8Buffer;
+      pu8Buffer++;
+    }
+    
+    LCDCommand(LCD_CLEAR_CMD);
+    LCDMessage(LINE1_START_ADDR , au8PrintfLine1);
+    LCDMessage(LINE2_START_ADDR , au8PrintfLine2);
   }
-   LCDCommand(LCD_CLEAR_CMD);
-   LCDMessage(LINE1_START_ADDR , au8PrintfLine1);
-   LCDMessage(LINE2_START_ADDR , au8PrintfLine2);
+  
+  else if(u8CountNumber >= 40)
+  {
+    u16Delay++;
+    if(u16Delay == 800)
+    {
+      u8CountPrint_40++;
+                  
+       if(u8CountPrint_40 < 20)
+        {
+          pu8Buffer = ((pu8EnterBuffer + 2) - u8CountPrintf);
+          for(u8 u8i=0; u8i<u8CountPrint_40; u8i++)
+          {
+            au8PrintfLine1[u8i] = *pu8Buffer;
+            pu8Buffer++;
+          }
+          
+          LCDCommand(LCD_CLEAR_CMD);
+          LCDMessage(LINE1_START_ADDR , au8PrintfLine1);
+          u16Delay = 0; 
+        }
+       
+        else if((u8CountPrint_40 >=20) && (u8CountPrint_40 < 40))
+        {
+          pu8Buffer = ((pu8EnterBuffer + 2) - u8CountPrintf);
+          
+          for(u8 u8j=0; u8j<20; u8j++)
+          {
+            au8PrintfLine1[u8j] = *pu8Buffer;
+            pu8Buffer++;
+          }
+          
+          for(u8 u8j=0; u8j<(u8CountPrint_40-19); u8j++)
+          {
+            au8PrintfLine2[u8j] = *pu8Buffer;
+            pu8Buffer++;
+          }
+          
+          LCDCommand(LCD_CLEAR_CMD);
+          LCDMessage(LINE1_START_ADDR , au8PrintfLine1);
+          LCDMessage(LINE2_START_ADDR , au8PrintfLine2);
+          u16Delay = 0;                 
+        }
+       
+       else if(u8CountPrint_40++ >= 40)
+        {
+          u8CountPrint_40 = 41;
+          u8CountNumber--;
+          pu8Buffer = ((pu8Transfer + 2) - u8CountPrintf);
+          
+          for(u8 u8j=0; u8j<20; u8j++)
+           {
+             au8PrintfLine1[u8j] = *pu8Buffer;
+             pu8Buffer++;
+           }
+          
+           for(u8 u8j=0; u8j<20; u8j++)
+           {
+             au8PrintfLine2[u8j] = *pu8Buffer;
+             pu8Buffer++;
+           }
+          
+           LCDCommand(LCD_CLEAR_CMD);
+           LCDMessage(LINE1_START_ADDR , au8PrintfLine1);
+           LCDMessage(LINE2_START_ADDR , au8PrintfLine2);
+           u16Delay = 0; 
+           pu8Transfer++;
+        }
+     }
+   }  
 }
 
 /**********************************************************************************************************************
@@ -301,6 +391,7 @@ static void UserApp1SM_Idle(void)
    static u32 u32DelayPrintName = 0;
    static u32 u32DelayCycleName = 0;
    static u32 u32CountBuffer = 0;
+   static u8 u8CountPrintf = 0;
    static u32 u32EnterBuffer = 0;
    static u8 au8Enter[] = "0";
    static u8 au8EnterBuffer[255]= "0";
@@ -308,6 +399,8 @@ static void UserApp1SM_Idle(void)
    static bool bPrintName = TRUE;
    static bool bCycleName = FALSE;
    static bool bEnterDebug = FALSE;
+   static bool bPrintf = FALSE;
+   static bool bPrintfCycle = FALSE;
    
  
    if(bPrintName)
@@ -346,15 +439,26 @@ static void UserApp1SM_Idle(void)
       if(DebugScanf(au8Enter) == 1)
       { 
         *pu8EnterBuffer = u32EnterBuffer;
-        Print_LCD(pu8EnterBuffer);
+        u8CountPrintf++;
+        if(u32EnterBuffer == '\r')
+         {
+           bPrintf = TRUE;
+           if(u8CountPrintf >= 40)
+           {
+             bPrintfCycle = TRUE;
+           }
+         }
+         if(bPrintf)
+         { 
+           Print_LCD((pu8EnterBuffer-1),u8CountPrintf);
+         }
         u32CountBuffer++;
         pu8EnterBuffer++;
       }
-      if(WasButtonPressed(BUTTON2))
-     {
-       ButtonAcknowledge(BUTTON2);
-       DebugPrintf(au8EnterBuffer);
-     }
+        if(bPrintfCycle)
+          { 
+           Print_LCD((pu8EnterBuffer-2),u8CountPrintf);
+          }
    }
    
 } /* end UserApp1SM_Idle() */

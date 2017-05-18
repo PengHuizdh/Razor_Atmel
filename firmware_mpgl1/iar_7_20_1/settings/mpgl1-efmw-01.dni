@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=2035150777
+Checksum=-277133817
 [JLinkDriver]
 CStepIntDis=_ 0
 WatchCond=_ 0
@@ -45,10 +45,16 @@ ActionState=1
 Enabled=_ 0
 [watch_formats]
 Fmt0={W}3:* pau8string	3	0
-Fmt1={W}3:UserApp_u8AdcResultCount	3	0
-Fmt2={W}3:u8CountCycleLine1	3	0
-Fmt3={W}3:u8CountCycleLine2	3	0
-Fmt4={W}3:u8conter2	3	0
+Fmt1={W}3:*pu8EnterBuffer	3	0
+Fmt2={W}3:*pu8NameBuffer	5	0
+Fmt3={W}3:UserApp_u8AdcResultCount	3	0
+Fmt4={W}3:pu8EnterBuffer	3	0
+Fmt5={W}3:pu8NameBuffer	3	0
+Fmt6={W}3:u8CountCycleLine1	3	0
+Fmt7={W}3:u8CountCycleLine2	3	0
+Fmt8={W}3:u8CountNumber	3	0
+Fmt9={W}3:u8CountPrintf	3	0
+Fmt10={W}3:u8conter2	3	0
 [Trace1]
 Enabled=0
 ShowSource=1
