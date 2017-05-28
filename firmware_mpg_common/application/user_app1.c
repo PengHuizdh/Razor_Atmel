@@ -41,6 +41,11 @@ extern volatile u32 G_u32SystemTime1s;                 /* From board-specific so
 extern u8 G_au8DebugScanfBuffer[DEBUG_SCANF_BUFFER_SIZE]; /* From debug.c */
 extern u8 G_u8DebugScanfCharCount;                        /* From debug.c */
 
+extern void LedDisplayStartList(void);                    /*Frome user_app2*/
+extern bool LedDisplayAddCommand(LedDisplayListNameType eListName_, LedCommandType* pCommandInfo_); /*Frome user_app2*/
+extern bool LedDisplayPrintListLine(u8 u8ListItem_);      /*Frome user_app2*/
+
+
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -123,9 +128,9 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 static void Number_Commands(void)
 {
-  static u8 u8Count;
+  static u8 u8Count = 49;
   static u8 au8PrintCount[3] = "0";
-  u8Count = 49;
+
   au8PrintCount[0] = u8Count;
   au8PrintCount[1] = '.';
   au8PrintCount[2] = ' ';
@@ -166,7 +171,7 @@ static void UserApp1SM_Idle(void)
   {
     au8Scanf[u32CountScanf] = *pau8ScanfBuffer;
     u32CountScanf++;
-    pau8Scanf = (au8Scanf + u32CountScanf); 
+    pau8Scanf = (au8Scanf + u32CountScanf - 1); 
     
     if((*pau8ScanfBuffer == '1') && (!bPress_1))
     {
@@ -175,17 +180,40 @@ static void UserApp1SM_Idle(void)
       DebugPrintf(au8Example);
       Number_Commands();
     }
+    if(*pau8Scanf == '\r')
+    {
+      DebugPrintf("\n");
+      Number_Commands();
+    }
+    
+    if((bPress_1) && (*pau8Scanf == '\r') && (*(pau8Scanf - 1) =='\r'))
+    { 
+      static u8 au8User_Printf[] = "0";
+      static u8* pau8User_Printf;
+      static bool bInitialize_1 = TRUE;
+      
+      pau8User_Printf = pau8Scanf;
+      
+      for(u8 u8i = 0; u8i < (u32CountScanf - 1); u8i++)
+      {
+        au8User_Printf[u8i] == *pau8User_Printf;
+        pau8User_Printf--;
+      }
+      au8User_Printf[(u32CountScanf - 1)] = '\n';
+      au8User_Printf[u32CountScanf] = '\r';
+      DebugPrintf(au8User_Printf);
+      Number_Commands();
+      u32CountScanf = 0;
+      bInitialize_1 = FALSE;
+    }
+    
     if((*pau8ScanfBuffer == '2') && (!bPress_2))
     {
       bPress_2 = TRUE;
     }
   } 
   
-  if((bPress_1) && (*pau8ScanfBuffer == '\r'))
-  {
-    
-    bPress_1 = FALSE;
-  }
+ 
   
   if((bPress_2) && (*pau8ScanfBuffer == '\r'))
   {
