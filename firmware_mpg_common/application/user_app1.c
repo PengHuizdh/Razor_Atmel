@@ -123,14 +123,19 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 static void Number_Commands(void)
 {
-  static u8* pu8Count;
+  static u8 u8Count;
   static u8 au8PrintCount[3] = "0";
-  *pu8Count = 1;
-  au8PrintCount[0] = *pu8Count;
+  u8Count = 49;
+  au8PrintCount[0] = u8Count;
   au8PrintCount[1] = '.';
   au8PrintCount[2] = ' ';
   DebugPrintf(au8PrintCount);
-  *pu8Count++;
+  u8Count++;
+}
+
+static void Commands_Buffer(u8* pau8Scanf, u8* pau8ScanfBuffer)
+{
+  
 }
 
 /**********************************************************************************************************************
@@ -163,27 +168,29 @@ static void UserApp1SM_Idle(void)
     u32CountScanf++;
     pau8Scanf = (au8Scanf + u32CountScanf); 
     
-    if(*pau8ScanfBuffer == '1')
+    if((*pau8ScanfBuffer == '1') && (!bPress_1))
     {
       bPress_1 = TRUE;
       u8 au8Example[] = "\n\n\rEnter Command as LED-ONTIME-OFFTIME and press Enter \n\rTime is in millisenconds \n\rLED colors: R, O, Y, G, C, B, P, W \n\rExample R-100-1000(Red on at 100ms and off at 1000ms \n\rPress Enter on Blank Line to end \n\r";
       DebugPrintf(au8Example);
       Number_Commands();
     }
-    if(*pau8ScanfBuffer == '2')
+    if((*pau8ScanfBuffer == '2') && (!bPress_2))
     {
       bPress_2 = TRUE;
     }
   } 
   
-  if(bPress_1)
-  {
-   
-  }
-  
-  if(bPress_2)
+  if((bPress_1) && (*pau8ScanfBuffer == '\r'))
   {
     
+    bPress_1 = FALSE;
+  }
+  
+  if((bPress_2) && (*pau8ScanfBuffer == '\r'))
+  {
+    
+    bPress_2 = FALSE;
   }
   
 } /* end UserApp1SM_Idle() */
