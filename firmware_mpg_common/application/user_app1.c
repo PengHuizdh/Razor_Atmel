@@ -121,7 +121,17 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions                                                                                                  */
 /*--------------------------------------------------------------------------------------------------------------------*/
-
+static void Number_Commands(void)
+{
+  static u8* pu8Count;
+  static u8 au8PrintCount[3] = "0";
+  *pu8Count = 1;
+  au8PrintCount[0] = *pu8Count;
+  au8PrintCount[1] = '.';
+  au8PrintCount[2] = ' ';
+  DebugPrintf(au8PrintCount);
+  *pu8Count++;
+}
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -131,6 +141,50 @@ State Machine Function Definitions
 /* Wait for input */
 static void UserApp1SM_Idle(void)
 {
+  static bool bTwo_Choices = TRUE;
+  static bool bPress_1 = FALSE;
+  static bool bPress_2 = FALSE;
+  static u32 u32CountScanf = 0;
+  static u8 au8Scanf[100]= "0";
+  static u8* pau8Scanf = au8Scanf;
+  static u8 au8ScanfBuffer[1] = "0";
+  static u8* pau8ScanfBuffer = au8ScanfBuffer;
+  static u8 au8Two_Choices[] = "*******************************************\n\r LED Programming Interface\n\r Press 1 to program LED command sequnece\n\r Press 2 to show current USER progrom\n\r*******************************************\n\r";
+  
+  if(bTwo_Choices)
+  {
+   DebugPrintf(au8Two_Choices);
+   bTwo_Choices = FALSE;
+  }
+  
+  if(DebugScanf(au8ScanfBuffer))
+  {
+    au8Scanf[u32CountScanf] = *pau8ScanfBuffer;
+    u32CountScanf++;
+    pau8Scanf = (au8Scanf + u32CountScanf); 
+    
+    if(*pau8ScanfBuffer == '1')
+    {
+      bPress_1 = TRUE;
+      u8 au8Example[] = "\n\n\rEnter Command as LED-ONTIME-OFFTIME and press Enter \n\rTime is in millisenconds \n\rLED colors: R, O, Y, G, C, B, P, W \n\rExample R-100-1000(Red on at 100ms and off at 1000ms \n\rPress Enter on Blank Line to end \n\r";
+      DebugPrintf(au8Example);
+      Number_Commands();
+    }
+    if(*pau8ScanfBuffer == '2')
+    {
+      bPress_2 = TRUE;
+    }
+  } 
+  
+  if(bPress_1)
+  {
+   
+  }
+  
+  if(bPress_2)
+  {
+    
+  }
   
 } /* end UserApp1SM_Idle() */
                       
