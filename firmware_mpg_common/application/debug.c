@@ -339,9 +339,10 @@ Promises:
 void DebugSetPassthrough(void)
 {
   G_u32DebugFlags |= _DEBUG_PASSTHROUGH;
-  
+  if(0)
+  {
   DebugPrintf("\n\n\r***Debug Passthrough enabled***\n\n\r");
-
+  }
 } /* end DebugSetPassthrough */
 
 
