@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1624308516
+Checksum=1938720617
 [JLinkDriver]
 CStepIntDis=_ 0
 WatchCond=_ 0
@@ -55,6 +55,9 @@ Fmt1={W}2:Msg_u8QueuedMessageCount	3	0
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [CallStackLog]
 Enabled=0
 [DriverProfiling]
@@ -63,9 +66,6 @@ Mode=1
 Graph=0
 Symbiont=0
 Exclusions=
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [Disassemble mode]
 mode=0
 [Breakpoints2]

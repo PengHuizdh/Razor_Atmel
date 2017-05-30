@@ -409,12 +409,14 @@ static void UserApp1SM_Idle(void)
   
     if(au8ChooseModel[0]=='1')
     {
+      /*if input '1',go to the UserApp1SM_CreatLedList*/
       UserApp1_StateMachine=UserApp1SM_CreatLedList;
       bPrintHomepage=TRUE;
     }
   
     else if(au8ChooseModel[0]=='2')
     {
+      /*if input '2',go to the UserApp1SM_PrintLedList*/
       UserApp1_StateMachine=UserApp1SM_PrintLedList;
       bPrintHomepage=TRUE;
     }
@@ -450,6 +452,7 @@ static void UserApp1SM_CreatLedList(void)
   static u8 au8ListString[30]="0";
   static u8 au8InputWord[1];
   static u8 au8CreatPage[]="\n\rEnter commands as LED-ONTINE-OFFTIME and press Enter\n\rTime is in milliseconds,max 100 commands\n\rLED colors:R,O,Y,G,C,B,P,W\n\rExample:R-100-200(Red on at 100ms and off at 200ms)\n\rPress Enter on blank line to end";
+  
   static u8 au8List1[3]="\n\r\0";
   static u8 au8List2[2]=":\0";
   
@@ -467,7 +470,7 @@ static void UserApp1SM_CreatLedList(void)
     DebugPrintf(au8CreatPage);
     bPrintHomepage=FALSE;
   }
-  
+  /*serial number such as 1: 2: 3:*/
    if(bNumber)
     { 
       DebugSetPassthrough();  
@@ -478,7 +481,7 @@ static void UserApp1SM_CreatLedList(void)
       bNumber=FALSE;
     }
  
-/*Wait Input*/
+/*Wait Input and end creating*/
   if(G_u8DebugScanfCharCount&&bInput)
   {    
     DebugScanf(au8InputWord);
@@ -486,6 +489,7 @@ static void UserApp1SM_CreatLedList(void)
   
     if(au8ListString[0]!='\r')
     {
+      /*make sure that users can use "Backspace"*/
      if(au8ListString[u8Point]=='\b')
      {
        u8Point--;
@@ -505,11 +509,16 @@ static void UserApp1SM_CreatLedList(void)
     }
     else
     {
+      /*When users end the Creating,the code will show that the new list*/
       u32NumbersOfList=u32Number;
+      u8 au8CreatOK[]="\n\rCommand entry complete.\n\rCommands enterd:";
+      DebugPrintf(au8CreatOK);
+      DebugPrintNumber(u32NumbersOfList);
+      u8 au8NewList[]="\n\r\n\rNew USER program\n\r";
+      DebugPrintf(au8NewList);
+      UserApp1SM_PrintLedList();
       UserApp1_StateMachine=UserApp1SM_Idle;
-      
       bPrintHomepage=TRUE;
-      
       bNumber=TRUE;
     }
   }
@@ -525,13 +534,13 @@ static void UserApp1SM_CreatLedList(void)
      u8ColourLed=ReadLed(au8ListString);
      u32StartTime=ReadOntime(au8ListString);
      u32EndTime=ReadOfftime(au8ListString);
-     
+     /*creat the ontime list*/
      RegisterList.eLED=u8ColourLed;
      RegisterList.bOn=TRUE;
      RegisterList.u32Time=u32StartTime;
      
      LedDisplayAddCommand(USER_LIST,&RegisterList);
-     
+     /*creat the endtime list*/
      RegisterList.bOn=FALSE;
      RegisterList.u32Time=u32EndTime;
      
@@ -543,6 +552,7 @@ static void UserApp1SM_CreatLedList(void)
      }
     else
     {
+      /*When you creat the wrong,it will remind user*/ 
       u8 au8String[]="\n\rInvalid command: incorrect format.Please use L-ONTIME-OFFTIME";
       DebugPrintf(au8String);
       bInput=TRUE;
@@ -574,7 +584,7 @@ Promises:
 static void UserApp1SM_PrintLedList(void)
 {
  static u8 u8Counter_2;
- static u8 au8Stting_2[]="\n\rLED  ON TIME   OFF TIME\n\r-----------------------\n\r";
+ static u8 au8Stting_2[]="\n\r\n\rLED  ON TIME   OFF TIME\n\r-----------------------\n\r";
  DebugPrintf(au8Stting_2);
  
  for(u8Counter_2=0;u8Counter_2<u32NumbersOfList;u8Counter_2++)
