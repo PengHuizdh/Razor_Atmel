@@ -169,6 +169,7 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
   
    if((*pau8Scanf_Funtion != '\r') && (*(pau8Scanf_Funtion - 1) != '\r'))
   { 
+      /*指针从头开始一个一个往后移*/
       pau8Scanf_Funtion++;
       u8CounterRecord++;
       if(*pau8Scanf_Funtion == '-')
@@ -182,6 +183,7 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
       {
         u8CounterBuffer = (u8CounterRecord - 1);
         pLed = (au8Scanf_ + u8CounterBuffer - 1 );
+        /*判断是那个灯*/
         switch(*pLed)
         {
         case 'W': UserCommand.eLED = 0; break;
@@ -207,6 +209,7 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
         bLed = FALSE;
       }
       
+      /*记录亮的时刻*/
       if((u8Count_ >= 1) && (u8Count_ < 2) && (!bLed))
       {
         au8OnTime[u8CountOnTime] = *pau8Scanf_Funtion ;
@@ -219,6 +222,7 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
           bError = TRUE;
         }
       }
+      /*记录熄的时刻*/
       if((u8Count_ >= 2) && (*pau8Scanf_Funtion != '\r'))
       {
         au8OffTime[u8CountOffTime] = *pau8Scanf_Funtion ;
@@ -234,6 +238,7 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
       if(*pau8Scanf_Funtion == '\r')
       {      
         pau8Scanf_Funtion = au8Scanf_ ;
+        /*清空用来存时刻的数组*/
         for(u8 u8j = 1; u8j < u8CountOnTime; u8j++)
         {
           au8OnTime[u8j] = '\0';
@@ -247,11 +252,13 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
         u8CountOnTime = 0;
         u8CountOffTime = 0; 
         bLed = TRUE;
+        /*如果有错则在这返回，不加入用户程序列表*/
         if(bError)
         {
           bError = FALSE;
           return FALSE;
         }
+        /*没有错误，将信息加入到用户程序列表*/
         UserCommand.bOn = TRUE;
         UserCommand.u32Time = u32OnTime;
         LedDisplayAddCommand(USER_LIST,&UserCommand);
@@ -299,6 +306,7 @@ static void UserApp1SM_Idle(void)
     u32CountScanf++;
     pau8Scanf = (au8Scanf + u32CountScanf - 1); 
     
+    /*按下1打印出示例*/
     if((*pau8ScanfBuffer == '1') && (!bPress_1))
     {
       bPress_1 = TRUE;
@@ -307,6 +315,7 @@ static void UserApp1SM_Idle(void)
       Number_Commands();
     }
     
+    /*按下2打印用户程序列表*/
     if((*pau8ScanfBuffer == '2') && (bPress_2))
     {
       DebugPrintf("\n\n\rUser progrom is :\n\r");
@@ -319,6 +328,7 @@ static void UserApp1SM_Idle(void)
       bPress_2 = FALSE;
     }
     
+    /*当输入完成后在空的一行按Enter，结束用户输入，并打印用户程序列表*/
     if((bPress_1) && (*pau8Scanf == '\r') && (u32CountScanf < 2))
     {     
       DebugPrintf("\n\n\rThe input is complete\n\r");
@@ -341,10 +351,13 @@ static void UserApp1SM_Idle(void)
     }
   }  
   
+  /*当一行命令写好后按下Enter，进行判断，并加入用户程序列表*/
   if((*pau8Scanf == '\r') && (u32CountScanf > 2))
   {
+    /*调用bool型的函数，进行判断*/
     if(!User_Command(au8Scanf, u32CountScanf))
     {  
+      /*清空当前数组*/
       for(u8 u8i = 1; u8i < u32CountScanf; u8i++)
       {
         au8Scanf[u8i] = '\0';
