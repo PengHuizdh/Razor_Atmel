@@ -128,18 +128,112 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 static void Number_Commands(void)
 {
-  static u8 u8Count = 49;
+  static u8 u8CountOnes_place = 49;
+  static u8 u8CountTens_place = 48;
   static u8 au8PrintCount[3] = "0";
 
-  au8PrintCount[0] = u8Count;
-  au8PrintCount[1] = '.';
-  au8PrintCount[2] = ' ';
+  au8PrintCount[0] = u8CountTens_place;
+  au8PrintCount[1] = u8CountOnes_place;;
+  au8PrintCount[2] = '.';
   DebugPrintf(au8PrintCount);
-  u8Count++;
+  u8CountOnes_place++;
+  if(u8CountOnes_place == 58)
+  {
+    u8CountTens_place++;
+    u8CountOnes_place = 48;
+  }
 }
 
-static void Commands_Buffer(u8* pau8Scanf, u8* pau8ScanfBuffer)
+static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
 {
+  static bool bInitialize = TRUE;
+  static u8* pau8Scanf_Funtion;
+  static u8* pLed;
+  static bool bLed = TRUE;
+  static u8 u8CounterRecord = 0;
+  static u8 u8CounterBuffer = 0;
+  static u8 u8CountOnTime = 0;
+  static u8 u8CountOffTime = 0;
+  static u8 u8Count_ = 0;
+  static u32 u32OnTime = 0;
+  static u32 u32OffTime = 0;
+  static u8 au8OnTime[5] = "0";
+  static u8 au8OffTime[5] = "0";
+  static LedCommandType UserCommand;
+  if(bInitialize)
+  {
+    pau8Scanf_Funtion = au8Scanf_ ;
+    bInitialize = FALSE;
+  }
+  
+   if((*pau8Scanf_Funtion != '\r') && (*(pau8Scanf_Funtion - 1) != '\r'))
+  { 
+      pau8Scanf_Funtion++;
+      u8CounterRecord++;
+      if(*pau8Scanf_Funtion == '-')
+      {
+        pau8Scanf_Funtion++;
+        u8CounterRecord++;
+        u8Count_++;
+      } 
+      
+      if((u8Count_ == 1) && (bLed))
+      {
+        u8CounterBuffer = (u8CounterRecord - 1);
+        pLed = (au8Scanf_ + u8CounterBuffer - 1 );
+        switch(*pLed)
+        {
+        case 'W': UserCommand.eLED = 0; break;
+        case 'w': UserCommand.eLED = 0; break;
+        case 'P': UserCommand.eLED = 1; break;
+        case 'p': UserCommand.eLED = 1; break;
+        case 'B': UserCommand.eLED = 2; break;
+        case 'b': UserCommand.eLED = 2; break;
+        case 'C': UserCommand.eLED = 3; break;
+        case 'c': UserCommand.eLED = 3; break;
+        case 'G': UserCommand.eLED = 4; break;
+        case 'g': UserCommand.eLED = 4; break;
+        case 'Y': UserCommand.eLED = 5; break;
+        case 'y': UserCommand.eLED = 5; break;
+        case 'O': UserCommand.eLED = 6; break;
+        case 'o': UserCommand.eLED = 6; break;
+        case 'R': UserCommand.eLED = 7; break;
+        case 'r': UserCommand.eLED = 7; break;
+        default: break;
+        }
+        u8CounterBuffer = 0;
+        bLed = FALSE;
+      }
+      
+      if((u8Count_ >= 1) && (u8Count_ < 2) && (!bLed))
+      {
+        au8OnTime[u8CountOnTime] = *pau8Scanf_Funtion ;
+        u8CountOnTime++;
+        u32OnTime = atoi(au8OnTime);
+      }
+      if((u8Count_ >= 2) && (*pau8Scanf_Funtion != '\r'))
+      {
+        au8OffTime[u8CountOffTime] = *pau8Scanf_Funtion ;
+        u8CountOffTime++;
+        u32OffTime = atoi(au8OffTime);
+      }
+      if(*pau8Scanf_Funtion == '\r')
+      {      
+        pau8Scanf_Funtion = au8Scanf_ ;
+        u8CounterRecord = 0;
+        u8Count_ = 0;
+        u8CountOnTime = 0;
+        u8CountOffTime = 0; 
+        bLed = TRUE;
+        UserCommand.bOn = TRUE;
+        UserCommand.u32Time = u32OnTime;
+        LedDisplayAddCommand(USER_LIST,&UserCommand);
+        UserCommand.bOn = FALSE;
+        UserCommand.u32Time = u32OffTime;
+        LedDisplayAddCommand(USER_LIST,&UserCommand);
+        return FALSE;
+      }    
+  }
   
 }
 
@@ -153,14 +247,16 @@ static void UserApp1SM_Idle(void)
 {
   static bool bTwo_Choices = TRUE;
   static bool bPress_1 = FALSE;
-  static bool bPress_2 = FALSE;
+  static bool bEnd = TRUE;
   static u32 u32CountScanf = 0;
+  static u8 u8Count_Enter = 0;
   static u8 au8Scanf[100]= "0";
   static u8* pau8Scanf = au8Scanf;
   static u8 au8ScanfBuffer[1] = "0";
   static u8* pau8ScanfBuffer = au8ScanfBuffer;
   static u8 au8Two_Choices[] = "*******************************************\n\r LED Programming Interface\n\r Press 1 to program LED command sequnece\n\r Press 2 to show current USER progrom\n\r*******************************************\n\r";
-  
+  static u8 au8Press_2[] = "\n\rLED On_Time  Off_Time\n\r----------------------\n\r";
+  static u8 au8End[] = "----------------------\n\r"; 
   if(bTwo_Choices)
   {
    DebugPrintf(au8Two_Choices);
@@ -180,46 +276,42 @@ static void UserApp1SM_Idle(void)
       DebugPrintf(au8Example);
       Number_Commands();
     }
-    if(*pau8Scanf == '\r')
+    
+    if((bPress_1) && (*pau8Scanf == '\r') && (u32CountScanf < 2))
+    {     
+      DebugPrintf("\n\n\rThe input is complete\n\r");
+      DebugPrintf(au8Press_2);
+      for(u8 u8i = 0; u8i < u8Count_Enter; u8i++)
+      {
+        LedDisplayPrintListLine(u8i);
+      }
+      DebugPrintf(au8End);
+      bPress_1 = FALSE;
+      bEnd = FALSE;
+    }
+    
+    if((*pau8Scanf == '\r') && (bEnd))
     {
+      u8Count_Enter++;
       DebugPrintf("\n");
       Number_Commands();
     }
-    
-    if((bPress_1) && (*pau8Scanf == '\r') && (*(pau8Scanf - 1) =='\r'))
-    { 
-      static u8 au8User_Printf[] = "0";
-      static u8* pau8User_Printf;
-      static bool bInitialize_1 = TRUE;
-      
-      pau8User_Printf = pau8Scanf;
-      
-      for(u8 u8i = 0; u8i < (u32CountScanf - 1); u8i++)
-      {
-        au8User_Printf[u8i] == *pau8User_Printf;
-        pau8User_Printf--;
-      }
-      au8User_Printf[(u32CountScanf - 1)] = '\n';
-      au8User_Printf[u32CountScanf] = '\r';
-      DebugPrintf(au8User_Printf);
-      Number_Commands();
-      u32CountScanf = 0;
-      bInitialize_1 = FALSE;
-    }
-    
-    if((*pau8ScanfBuffer == '2') && (!bPress_2))
-    {
-      bPress_2 = TRUE;
-    }
-  } 
+  }  
   
- 
-  
-  if((bPress_2) && (*pau8ScanfBuffer == '\r'))
+  if((*pau8Scanf == '\r') && (u32CountScanf > 2))
   {
     
-    bPress_2 = FALSE;
-  }
+   
+    if(!User_Command(au8Scanf, u32CountScanf))
+    {  
+      for(u8 u8i = 1; u8i < u32CountScanf; u8i++)
+      {
+        au8Scanf[u8i] = '\0';
+      }
+      u32CountScanf = 0;
+    }  
+  } 
+  
   
 } /* end UserApp1SM_Idle() */
                       
