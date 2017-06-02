@@ -89,6 +89,15 @@ void UserApp1Initialize(void)
   DebugSetPassthrough();
   DebugPrintf(au8UserApp1Start1);
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
     /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -524,6 +533,7 @@ static void UserApp1SM_CreatLedList(void)
       UserApp1_StateMachine=UserApp1SM_Idle;
       bPrintHomepage=TRUE;
       bNumber=TRUE;
+      Reset(au8ListString);
     }
   }
   
