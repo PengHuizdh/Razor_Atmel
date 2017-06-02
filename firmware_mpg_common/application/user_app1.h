@@ -63,7 +63,7 @@ static void UserApp1SM_Error(void);
 static void UserApp1SM_FailedInit(void); 
 static void UserApp1SM_CreatLedList(void);
 static void UserApp1SM_PrintLedList(void);
-
+static void UserApp1SM_Wait(void);
 #endif /* __USER_APP1_H */
 
 

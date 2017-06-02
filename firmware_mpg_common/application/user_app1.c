@@ -89,8 +89,9 @@ void UserApp1Initialize(void)
   DebugSetPassthrough();
   DebugPrintf(au8UserApp1Start1);
   
-  
-  
+  LedOff(LCD_RED);
+  LedOff(LCD_GREEN);
+  LedOff(LCD_BLUE);
   
   
   
@@ -386,6 +387,10 @@ Promises:
 */
 static void UserApp1SM_Idle(void)
 {
+  LedOff(LCD_RED);
+  LedOff(LCD_GREEN);
+  LedOff(LCD_BLUE);
+  LedOn(LCD_RED);
   u8 u8Counter1_1;
 
   static u8 au8ChooseModel[1]="0";
@@ -454,6 +459,11 @@ Promises:
 */
 static void UserApp1SM_CreatLedList(void)
 {
+  LedOff(LCD_RED);
+  LedOff(LCD_GREEN);
+  LedOff(LCD_BLUE);
+  LedOn(LCD_GREEN);
+  
   static u32 u32StartTime;
   static u32 u32EndTime;
   static u8 u8ColourLed;
@@ -530,7 +540,7 @@ static void UserApp1SM_CreatLedList(void)
       u8 au8NewList[]="\n\r\n\rNew USER program\n\r";
       DebugPrintf(au8NewList);
       UserApp1SM_PrintLedList();
-      UserApp1_StateMachine=UserApp1SM_Idle;
+      UserApp1_StateMachine=UserApp1SM_Wait;
       bPrintHomepage=TRUE;
       bNumber=TRUE;
       Reset(au8ListString);
@@ -569,6 +579,7 @@ static void UserApp1SM_CreatLedList(void)
       /*When you creat the wrong,it will remind user*/ 
       u8 au8String[]="\n\rInvalid command: incorrect format.Please use L-ONTIME-OFFTIME";
       DebugPrintf(au8String);
+      
       bInput=TRUE;
       bNumber=TRUE;
     }
@@ -597,6 +608,11 @@ Promises:
 */
 static void UserApp1SM_PrintLedList(void)
 {
+  LedOff(LCD_RED);
+  LedOff(LCD_GREEN);
+  LedOff(LCD_BLUE); 
+  LedOn(LCD_BLUE);
+ 
  static u8 u8Counter_2;
  static u8 au8Stting_2[]="\n\r\n\rLED  ON TIME   OFF TIME\n\r-----------------------\n\r";
  static u8 au8String_3[]="\n\r-----------------------\n\r";
@@ -608,9 +624,33 @@ static void UserApp1SM_PrintLedList(void)
  }
  
  DebugPrintf(au8String_3);
- UserApp1_StateMachine=UserApp1SM_Idle;
+ UserApp1_StateMachine=UserApp1SM_Wait;
  bPrintHomepage=TRUE;
 }/* end UserApp1SM_PrintLedList()*/
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------------------------------------------------------------------------
+Function: UserApp1SM_Wait()
+
+Description:
+  -Waitting go back to Idle
+
+
+Requires:
+  - NONE
+
+Promises:
+  - 
+*/
+static void UserApp1SM_Wait(void)
+{
+  if(G_u8DebugScanfCharCount)
+  {
+    UserApp1_StateMachine=UserApp1SM_Idle;
+  }
+  
+}/* end UserApp1SM_Wait()*/
             
 #if 0
 /*-------------------------------------------------------------------------------------------------------------------*/
