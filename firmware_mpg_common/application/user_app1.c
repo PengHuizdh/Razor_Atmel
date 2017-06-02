@@ -150,6 +150,7 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
   static u8* pau8Scanf_Funtion;
   static u8* pLed;
   static bool bLed = TRUE;
+  static bool bError = FALSE;
   static u8 u8CounterRecord = 0;
   static u8 u8CounterBuffer = 0;
   static u8 u8CountOnTime = 0;
@@ -199,9 +200,10 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
         case 'o': UserCommand.eLED = 6; break;
         case 'R': UserCommand.eLED = 7; break;
         case 'r': UserCommand.eLED = 7; break;
-        default: break;
+        default: DebugPrintf("Please enter the correct color\n\r"); Number_Commands(); bError = TRUE; break;
         }
         u8CounterBuffer = 0;
+        
         bLed = FALSE;
       }
       
@@ -210,32 +212,59 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
         au8OnTime[u8CountOnTime] = *pau8Scanf_Funtion ;
         u8CountOnTime++;
         u32OnTime = atoi(au8OnTime);
+        if((*pau8Scanf_Funtion < 48) || (*pau8Scanf_Funtion > 57))
+        {
+          DebugPrintf("Please enter the correct Time\n\r");
+          Number_Commands();
+          bError = TRUE;
+        }
       }
       if((u8Count_ >= 2) && (*pau8Scanf_Funtion != '\r'))
       {
         au8OffTime[u8CountOffTime] = *pau8Scanf_Funtion ;
         u8CountOffTime++;
         u32OffTime = atoi(au8OffTime);
+        if((*pau8Scanf_Funtion < 48) || (*pau8Scanf_Funtion > 57))
+        {
+          DebugPrintf("Please enter the correct Time\n\r");
+          Number_Commands();
+          bError = TRUE;
+        }
       }
       if(*pau8Scanf_Funtion == '\r')
       {      
         pau8Scanf_Funtion = au8Scanf_ ;
+        for(u8 u8j = 1; u8j < u8CountOnTime; u8j++)
+        {
+          au8OnTime[u8j] = '\0';
+        }
+        for(u8 u8k = 1; u8k < u8CountOffTime; u8k++)
+        {
+          au8OffTime[u8k] = '\0';
+        }
         u8CounterRecord = 0;
         u8Count_ = 0;
         u8CountOnTime = 0;
         u8CountOffTime = 0; 
         bLed = TRUE;
+        if(bError)
+        {
+          bError = FALSE;
+          return FALSE;
+        }
         UserCommand.bOn = TRUE;
         UserCommand.u32Time = u32OnTime;
         LedDisplayAddCommand(USER_LIST,&UserCommand);
         UserCommand.bOn = FALSE;
         UserCommand.u32Time = u32OffTime;
-        LedDisplayAddCommand(USER_LIST,&UserCommand);
+        LedDisplayAddCommand(USER_LIST,&UserCommand);       
         return FALSE;
+            
       }    
   }
   
 }
+
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -300,8 +329,6 @@ static void UserApp1SM_Idle(void)
   
   if((*pau8Scanf == '\r') && (u32CountScanf > 2))
   {
-    
-   
     if(!User_Command(au8Scanf, u32CountScanf))
     {  
       for(u8 u8i = 1; u8i < u32CountScanf; u8i++)
@@ -309,7 +336,8 @@ static void UserApp1SM_Idle(void)
         au8Scanf[u8i] = '\0';
       }
       u32CountScanf = 0;
-    }  
+    } 
+    
   } 
   
   
