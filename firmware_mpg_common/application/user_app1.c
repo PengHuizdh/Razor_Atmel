@@ -152,6 +152,7 @@ static bool bCheck(u8 au8String[])
   u8 u8Second;
   u8 u8Counter1;
   
+  /*If there are two strings'-',go to check the Led*/ 
   for(u8Counter1=2;u8Counter1<20;u8Counter1++)
   {
     if(au8String[u8Counter1]=='-')
@@ -164,6 +165,7 @@ static bool bCheck(u8 au8String[])
   
   if(bExist&&au8String[1]=='-')
   {
+    /*if the Led is right,go to chenk on time*/
     switch(au8String[0])
     {
     case 'W':break;
@@ -187,6 +189,7 @@ static bool bCheck(u8 au8String[])
     
     if(bLed)
     {
+      /*Check ontime*/
       for(u8Counter1=2;u8Counter1<u8Second;u8Counter1++)
       {
         if(au8String[u8Counter1]<'0'||au8String[u8Counter1]>'9')
@@ -199,6 +202,7 @@ static bool bCheck(u8 au8String[])
     
     if(bTime)
     {
+      /*Check offtime*/
       for(u8Counter1=u8Second+1;au8String[u8Counter1]!='\r';u8Counter1++)
         {
           if(au8String[u8Counter1]<'0'||au8String[u8Counter1]>'9')
@@ -227,7 +231,7 @@ Requires:
   - au8String2[]
 
 Promises:
-  - None
+  - Make au8String2[]="0"
 
 */
 static void Reset(u8 au8String2[])
@@ -510,7 +514,7 @@ static void UserApp1SM_CreatLedList(void)
     else
     {
       /*When users end the Creating,the code will show that the new list*/
-      u32NumbersOfList=u32Number;
+      u32NumbersOfList=u32Number-1;
       u8 au8CreatOK[]="\n\rCommand entry complete.\n\rCommands enterd:";
       DebugPrintf(au8CreatOK);
       DebugPrintNumber(u32NumbersOfList);
@@ -585,6 +589,7 @@ static void UserApp1SM_PrintLedList(void)
 {
  static u8 u8Counter_2;
  static u8 au8Stting_2[]="\n\r\n\rLED  ON TIME   OFF TIME\n\r-----------------------\n\r";
+ static u8 au8String_3[]="\n\r-----------------------\n\r";
  DebugPrintf(au8Stting_2);
  
  for(u8Counter_2=0;u8Counter_2<u32NumbersOfList;u8Counter_2++)
@@ -592,6 +597,7 @@ static void UserApp1SM_PrintLedList(void)
   LedDisplayPrintListLine(u8Counter_2);
  }
  
+ DebugPrintf(au8String_3);
  UserApp1_StateMachine=UserApp1SM_Idle;
  bPrintHomepage=TRUE;
 }/* end UserApp1SM_PrintLedList()*/
