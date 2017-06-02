@@ -276,6 +276,7 @@ static void UserApp1SM_Idle(void)
 {
   static bool bTwo_Choices = TRUE;
   static bool bPress_1 = FALSE;
+  static bool bPress_2 = FALSE;
   static bool bEnd = TRUE;
   static u32 u32CountScanf = 0;
   static u8 u8Count_Enter = 0;
@@ -306,6 +307,18 @@ static void UserApp1SM_Idle(void)
       Number_Commands();
     }
     
+    if((*pau8ScanfBuffer == '2') && (bPress_2))
+    {
+      DebugPrintf("\n\n\rUser progrom is :\n\r");
+      DebugPrintf(au8Press_2);
+      for(u8 u8j = 0; u8j < u8Count_Enter; u8j++)
+      {
+        LedDisplayPrintListLine(u8j);
+      }
+      DebugPrintf(au8End);
+      bPress_2 = FALSE;
+    }
+    
     if((bPress_1) && (*pau8Scanf == '\r') && (u32CountScanf < 2))
     {     
       DebugPrintf("\n\n\rThe input is complete\n\r");
@@ -316,6 +329,7 @@ static void UserApp1SM_Idle(void)
       }
       DebugPrintf(au8End);
       bPress_1 = FALSE;
+      bPress_2 = TRUE;
       bEnd = FALSE;
     }
     
