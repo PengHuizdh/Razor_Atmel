@@ -173,7 +173,7 @@ static bool bCheck(u8 au8String[])
     }
   }
   
-  if(bExist&&au8String[1]=='-')
+  if(bExist&&au8String[1]=='-'&&(u8Counter1>2))
   {
     /*if the Led is right,go to chenk on time*/
     switch(au8String[0])
