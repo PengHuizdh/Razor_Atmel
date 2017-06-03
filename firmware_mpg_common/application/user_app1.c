@@ -267,11 +267,9 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
         UserCommand.bOn = FALSE;
         UserCommand.u32Time = u32OffTime;
         LedDisplayAddCommand(USER_LIST,&UserCommand);       
-        return FALSE;
-            
+        return FALSE;            
       }    
-  }
-  
+   }
 }
 
 
