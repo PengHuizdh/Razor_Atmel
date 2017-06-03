@@ -137,6 +137,7 @@ static void Number_Commands(void)
   au8PrintCount[2] = '.';
   DebugPrintf(au8PrintCount);
   u8CountOnes_place++;
+  
   if(u8CountOnes_place == 58)
   {
     u8CountTens_place++;
@@ -161,6 +162,7 @@ static bool User_Command(u8* au8Scanf_, u32 u32CountScanf_)
   static u8 au8OnTime[5] = "0";
   static u8 au8OffTime[5] = "0";
   static LedCommandType UserCommand;
+  
   if(bInitialize)
   {
     pau8Scanf_Funtion = au8Scanf_ ;
@@ -343,6 +345,11 @@ static void UserApp1SM_Idle(void)
       bPress_1 = FALSE;
       bPress_2 = TRUE;
       bEnd = FALSE;
+    }
+    
+    if(*pau8Scanf == '\b')
+    {
+      u32CountScanf = u32CountScanf - 2;
     }
     
     if((*pau8Scanf == '\r') && (bEnd))
