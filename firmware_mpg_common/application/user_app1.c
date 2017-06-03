@@ -326,6 +326,7 @@ static void UserApp1SM_Idle(void)
       }
       
       DebugPrintf(au8End);
+      LedDisplayStartList();
       bPress_2 = FALSE;
     }
     
