@@ -470,7 +470,7 @@ static void UserApp1SM_CreatLedList(void)
   
   static u8 u8Point=0;
   static u32 u32Number=1;
-   
+  static u32 u32Lasttime;
   
   static u8 au8ListString[30]="0";
   static u8 au8InputWord[1];
@@ -482,6 +482,7 @@ static void UserApp1SM_CreatLedList(void)
   static bool bCreatList=FALSE;
   static bool bInput=TRUE;
   static bool bNumber=TRUE;
+  static bool bWrong=FALSE;
   static LedCommandType RegisterList;
 /*Page*/  
   if(bPrintHomepage)
@@ -573,6 +574,8 @@ static void UserApp1SM_CreatLedList(void)
      bInput=TRUE;
      bNumber=TRUE;
      u32Number=u32Number+1;
+     
+     
      }
     else
     {
@@ -582,9 +585,26 @@ static void UserApp1SM_CreatLedList(void)
       
       bInput=TRUE;
       bNumber=TRUE;
+      
+      u32Lasttime=G_u32SystemTime1s;
+      LedOn(RED);
+      PWMAudioOn(BUZZER1);
+      PWMAudioSetFrequency(BUZZER1, 262);
+      bWrong=TRUE;
     }
+    
+    
   }
-
+if(bWrong)
+    {
+      if((G_u32SystemTime1s-u32Lasttime)==1)
+      {
+        LedOff(RED);
+        PWMAudioOff(BUZZER1);
+        bWrong=FALSE;
+      }
+      
+    }
 
   
   
