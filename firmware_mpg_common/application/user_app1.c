@@ -51,7 +51,8 @@ extern volatile u32 G_u32ApplicationFlags;             /* From main.c */
 
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
-
+extern u8 G_au8DebugScanfBuffer[];
+extern u8 G_u8DebugScanfCharCount;
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -87,7 +88,16 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
- 
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+  static void state1(void);
+  static void state2(void);
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -96,7 +106,7 @@ void UserApp1Initialize(void)
   else
   {
     /* The task isn't properly initialized, so shut it down and don't run */
-    UserApp1_StateMachine = UserApp1SM_FailedInit;
+    UserApp1_StateMachine = UserApp1SM_Idle;
   }
 
 } /* end UserApp1Initialize() */
@@ -126,7 +136,104 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions                                                                                                  */
 /*--------------------------------------------------------------------------------------------------------------------*/
+static void LedOffAll(void)
+{
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+}
 
+static void Judge_Function(void)
+{
+  static u8 u8Input = 1;
+  static u8 u8Buff = 0;
+  static u32 u32Count = 0;
+  static u32 u32CountInput = 0;
+  static u8 au8Buff[100] = "0";
+  static u8 au8Scanf[10] = "0";
+  static bool Enter = TRUE;
+  
+  u8Buff = G_au8DebugScanfBuffer[0];
+ 
+  if(DebugScanf(au8Scanf) == 1)
+  {
+    au8Buff[u32CountInput] = u8Buff;
+    u32CountInput++;
+    if(au8Buff[u32CountInput - 1] == '\r')
+    {
+    u8Input = au8Buff[u32CountInput - 2];
+    Enter = TRUE;
+    }
+  }
+  
+  if(!Enter)
+  {
+  UserApp1_StateMachine = UserApp1SM_Idle;
+  }
+  
+ if( WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    u8Input = 1;
+    Enter = TRUE;
+  }
+  if(WasButtonPressed(BUTTON2))
+  {
+    ButtonAcknowledge(BUTTON2);
+    u8Input = 2;
+    Enter = TRUE;
+  }
+  
+  if(((u8Input == 1) || (u8Input == '1')) && Enter)
+  {
+    Enter = FALSE;
+    UserApp1_StateMachine = state1;
+  }
+  if(((u8Input == 2) || (u8Input == '2')) && Enter)
+  {
+    Enter = FALSE;
+    UserApp1_StateMachine = state2;
+  }
+  
+  if((u8Input == 1) || (u8Input == '1'))
+  {
+    LedPWM(LCD_RED, LED_PWM_100);
+    LedPWM(LCD_GREEN, LED_PWM_0);
+    LedPWM(LCD_BLUE, LED_PWM_100);
+
+  }
+  
+  if((u8Input == 2) || (u8Input == '2'))
+  {
+     
+     LedPWM(LCD_GREEN, LED_PWM_100);
+     LedPWM(LCD_RED, LED_PWM_55);
+     LedPWM(LCD_BLUE, LED_PWM_5);
+     
+    PWMAudioSetFrequency(BUZZER1,200);
+    if(u32Count==0)
+    {
+       PWMAudioOn(BUZZER1);
+    }
+    
+    u32Count++;
+    
+    if(u32Count ==100)
+    {
+      PWMAudioOff(BUZZER1);
+    }
+    if(u32Count==1000)
+    {
+      u32Count=0;
+    }
+  }
+  
+}
 
 /**********************************************************************************************************************
 State Machine Function Definitions
@@ -136,8 +243,52 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-
+  Judge_Function();
 } /* end UserApp1SM_Idle() */
+
+static void state1(void)
+{
+  static u8 au8Debug1[]="Entering state 1 \n\r";
+  static u8 au8LCD1[]="STATE 1";
+  
+  PWMAudioOff(BUZZER1);
+  LCDCommand(LCD_CLEAR_CMD);
+  LCDMessage(LINE1_START_ADDR+7, au8LCD1);
+  DebugPrintf(au8Debug1);
+  
+  LedOffAll();
+  LedOn(WHITE);
+  LedOn(PURPLE);
+  LedOn(BLUE);
+  LedOn(CYAN);
+  
+  Judge_Function();
+} /* end state1() */
+
+static void state2(void)
+{
+  static u8 au8Debug2[]="Entering state 2 \n\r";
+  static u8 au8LCD2[]="STATE 2";
+  
+  PWMAudioOff(BUZZER1);
+  LCDCommand(LCD_CLEAR_CMD);
+  LCDMessage(LINE1_START_ADDR+7, au8LCD2);
+  DebugPrintf(au8Debug2);
+  
+  LedOffAll();
+  LedOn(GREEN);
+  LedOn(YELLOW);
+  LedOn(ORANGE);
+  LedOn(RED);
+  
+  LedBlink(GREEN,LED_1HZ);
+  LedBlink(YELLOW,LED_2HZ);
+  LedBlink(ORANGE,LED_4HZ);
+  LedBlink(RED,LED_8HZ);
+  
+  
+  Judge_Function();
+} /* end state2() */
     
 #if 0
 /*-------------------------------------------------------------------------------------------------------------------*/
