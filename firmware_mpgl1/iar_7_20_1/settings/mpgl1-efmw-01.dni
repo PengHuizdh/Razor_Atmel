@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1623855877
+Checksum=-505519134
 [JLinkDriver]
 CStepIntDis=_ 0
 WatchCond=_ 0
@@ -44,9 +44,10 @@ ActionState=1
 [CodeCoverage]
 Enabled=_ 0
 [watch_formats]
-Fmt0={W}3:* pau8string	3	0
-Fmt1={W}3:UserApp_u8AdcResultCount	3	0
-Fmt2={W}3:u8conter2	3	0
+Fmt0={W}1:G_u8DebugScanfCharCount	3	0
+Fmt1={W}3:* pau8string	3	0
+Fmt2={W}3:UserApp_u8AdcResultCount	3	0
+Fmt3={W}3:u8conter2	3	0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
