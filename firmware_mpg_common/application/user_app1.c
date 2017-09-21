@@ -148,7 +148,14 @@ static void LedOffAll(void)
   LedOff(RED);
 }
 
-static void Judge_Function(void)
+
+/**********************************************************************************************************************
+State Machine Function Definitions
+**********************************************************************************************************************/
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+/* Wait for ??? */
+static void UserApp1SM_Idle(void)
 {
   static u8 u8Input = 1;
   static u8 u8Buff = 0;
@@ -162,8 +169,11 @@ static void Judge_Function(void)
  
   if(DebugScanf(au8Scanf) == 1)
   {
+    /*Read buffer*/
     au8Buff[u32CountInput] = u8Buff;
     u32CountInput++;
+    
+    /*if press Enter than access state1 or state2 in next second*/
     if(au8Buff[u32CountInput - 1] == '\r')
     {
     u8Input = au8Buff[u32CountInput - 2];
@@ -171,6 +181,7 @@ static void Judge_Function(void)
     }
   }
   
+  /*if didn't press Enter than remain Idle next second*/
   if(!Enter)
   {
   UserApp1_StateMachine = UserApp1SM_Idle;
@@ -189,6 +200,7 @@ static void Judge_Function(void)
     Enter = TRUE;
   }
   
+  /*The condition is from BUTTON or Tera Term*/
   if(((u8Input == 1) || (u8Input == '1')) && Enter)
   {
     Enter = FALSE;
@@ -200,12 +212,12 @@ static void Judge_Function(void)
     UserApp1_StateMachine = state2;
   }
   
+  /*It's for backlight*/
   if((u8Input == 1) || (u8Input == '1'))
   {
     LedPWM(LCD_RED, LED_PWM_100);
     LedPWM(LCD_GREEN, LED_PWM_0);
     LedPWM(LCD_BLUE, LED_PWM_100);
-
   }
   
   if((u8Input == 2) || (u8Input == '2'))
@@ -214,7 +226,8 @@ static void Judge_Function(void)
      LedPWM(LCD_GREEN, LED_PWM_100);
      LedPWM(LCD_RED, LED_PWM_55);
      LedPWM(LCD_BLUE, LED_PWM_5);
-     
+    
+     /*It's for BUZZER*/
     PWMAudioSetFrequency(BUZZER1,200);
     if(u32Count==0)
     {
@@ -232,23 +245,11 @@ static void Judge_Function(void)
       u32Count=0;
     }
   }
-  
-}
-
-/**********************************************************************************************************************
-State Machine Function Definitions
-**********************************************************************************************************************/
-
-/*-------------------------------------------------------------------------------------------------------------------*/
-/* Wait for ??? */
-static void UserApp1SM_Idle(void)
-{
-  Judge_Function();
 } /* end UserApp1SM_Idle() */
 
 static void state1(void)
 {
-  static u8 au8Debug1[]="Entering state 1 \n\r";
+  static u8 au8Debug1[]="Entering state 1 \n\n\r";
   static u8 au8LCD1[]="STATE 1";
   
   PWMAudioOff(BUZZER1);
@@ -262,12 +263,12 @@ static void state1(void)
   LedOn(BLUE);
   LedOn(CYAN);
   
-  Judge_Function();
+  UserApp1_StateMachine = UserApp1SM_Idle;
 } /* end state1() */
 
 static void state2(void)
 {
-  static u8 au8Debug2[]="Entering state 2 \n\r";
+  static u8 au8Debug2[]="Entering state 2 \n\n\r";
   static u8 au8LCD2[]="STATE 2";
   
   PWMAudioOff(BUZZER1);
@@ -287,7 +288,7 @@ static void state2(void)
   LedBlink(RED,LED_8HZ);
   
   
-  Judge_Function();
+  UserApp1_StateMachine = UserApp1SM_Idle;
 } /* end state2() */
     
 #if 0
